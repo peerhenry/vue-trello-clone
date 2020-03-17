@@ -1,17 +1,24 @@
 <template lang="pug">
 .board
-  h1 bonjour
+  .flex.flex-row.items-start
+    .column(v-for="(column, ci) of board.columns" :key="`col-${ci}`")
+      .flex.items-center.mb-2.font-bold {{ column.name }}
+      .task(v-for="(task, ti) in column.tasks" :key="`col-${ti}`")
+        span.w-full.flex-shrink-0.font-bold {{ task.name }}
+        span.w-full.flex-shrink-0.mt-1.text-sm(v-if="task.description") {{ task.description }}
 </template>
 
 <script>
-export default {}
-// @apply flex items-center flex-wrap shadow mb-2 py-2 px-2 rounded bg-white text-grey-darkest no-underline
-// @extend .flex .items-center .flex-wrap .shadow .mb-2 .py-2 .px-2 .rounded .bg-white .text-grey-darkest .no-underline
+import { mapState } from 'vuex'
+
+export default {
+  computed: mapState(['board']),
+}
 </script>
 
 <style lang="stylus">
 .task
-  @apply flex items-center flex-wrap shadow mb-2 py-2 px-2 rounded bg-white text-grey-800 no-underline
+  @apply flex items-center flex-wrap shadow mb-2 py-2 px-2 rounded bg-white text-gray-800 no-underline
 
 .column
   @apply bg-grey-300 p-2 mr-4 text-left shadow rounded

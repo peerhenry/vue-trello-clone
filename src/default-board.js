@@ -10,7 +10,7 @@ export default {
       name: 'todo',
       tasks: [
         {
-          description: '',
+          description: 'This is the first task and it has a dummy description',
           name: 'first task',
           id: uuid(),
           userAssigned: null,
