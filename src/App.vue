@@ -1,10 +1,10 @@
 <template lang="pug">
 #app
-  h1 Bonjour
+  router-view
 </template>
 
 <style lang="stylus">
-@import 'assets/styles/tailwind.postcss';
+@import 'assets/styles/tailwind.postcss'
 
 html, body, #app
   margin 0
@@ -17,7 +17,9 @@ html, body, #app
   -moz-osx-font-smoothing grayscale
   text-align center
   color white
-  background-color #02a295
   width 100%
   overflow auto
+
+.container
+  @apply mx-auto
 </style>
