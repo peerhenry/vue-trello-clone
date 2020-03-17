@@ -3,16 +3,41 @@
   .flex.flex-row.items-start
     .column(v-for="(column, ci) of board.columns" :key="`col-${ci}`")
       .flex.items-center.mb-2.font-bold {{ column.name }}
-      .task(v-for="(task, ti) in column.tasks" :key="`col-${ti}`")
-        span.w-full.flex-shrink-0.font-bold {{ task.name }}
-        span.w-full.flex-shrink-0.mt-1.text-sm(v-if="task.description") {{ task.description }}
+      div
+        .task(
+          v-for="(task, ti) in column.tasks"
+          :key="`col-${ti}`"
+          @click="openTask(task)"
+          )
+          span.w-full.flex-shrink-0.font-bold {{ task.name }}
+          span.w-full.flex-shrink-0.mt-1.text-sm(v-if="task.description") {{ task.description }}
+
+  .task-bg(
+    v-if="isTaskOpen"
+    @click.self="close"
+    )
+    router-view
 </template>
 
 <script>
 import { mapState } from 'vuex'
 
 export default {
-  computed: mapState(['board']),
+  name: 'Board',
+  computed: {
+    ...mapState(['board']),
+    isTaskOpen() {
+      return this.$route.name === 'task'
+    },
+  },
+  methods: {
+    openTask(task) {
+      this.$router.push({ name: 'task', params: { id: task.id } })
+    },
+    close() {
+      this.$router.push({ name: 'board' })
+    },
+  },
 }
 </script>
 
