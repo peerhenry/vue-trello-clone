@@ -4,9 +4,11 @@
     .column(
       v-for="(column, colIndex) of board.columns"
       :key="`col-${colIndex}`"
-      @drop="dropTask($event, column.tasks)"
+      draggable
+      @drop="dropTaskOrColumn($event, column.tasks, colIndex)"
       @dragover.prevent
       @dragenter.prevent
+      @dragstart.self="pickupColumn($event, colIndex)"
       )
       .flex.items-center.mb-2.font-bold {{ column.name }}
       div
@@ -62,23 +64,34 @@ export default {
       e.dataTransfer.dropEffect = 'move'
       e.dataTransfer.setData('task-index', taskIndex)
       e.dataTransfer.setData('from-column-index', fromColIndex)
+      e.dataTransfer.setData('drag-type', 'task')
     },
     dropTask(e, toTasks) {
       const taskIndex = e.dataTransfer.getData('task-index')
       const fromColIndex = e.dataTransfer.getData('from-column-index')
       const fromTasks = this.board.columns[fromColIndex].tasks
-      console.log(
-        'time to move',
-        taskIndex,
-        'from',
-        fromColIndex,
-        'to',
-        toTasks
-      )
       this.$store.commit('MOVE_TASK', {
         fromTasks,
         toTasks,
         taskIndex,
+      })
+    },
+    pickupColumn(e, colIndex) {
+      e.dataTransfer.effectAllowed = 'move'
+      e.dataTransfer.dropEffect = 'move'
+      e.dataTransfer.setData('from-column-index', colIndex)
+      e.dataTransfer.setData('drag-type', 'column')
+    },
+    dropTaskOrColumn(e, totTasks, toColumnIndex) {
+      const dragType = e.dataTransfer.getData('drag-type')
+      if (dragType === 'task') this.dropTask(e, totTasks)
+      else this.moveColumn(e, toColumnIndex)
+    },
+    moveColumn(e, toColumnIndex) {
+      const fromColumnIndex = e.dataTransfer.getData('from-column-index')
+      this.$store.commit('MOVE_COLUMN', {
+        fromColumnIndex,
+        toColumnIndex,
       })
     },
   },

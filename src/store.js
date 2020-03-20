@@ -32,6 +32,11 @@ const store = {
       const taskToMove = fromTasks.splice(taskIndex, 1)[0]
       toTasks.push(taskToMove)
     },
+    MOVE_COLUMN: (state, { fromColumnIndex, toColumnIndex }) => {
+      const columnList = state.board.columns
+      const colToMove = columnList.splice(fromColumnIndex, 1)[0]
+      columnList.splice(toColumnIndex, 0, colToMove)
+    },
   },
 }
 
