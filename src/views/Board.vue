@@ -5,7 +5,7 @@
       v-for="(column, colIndex) of board.columns"
       :key="`col-${colIndex}`"
       draggable
-      @drop="dropTaskOrColumn($event, column.tasks, colIndex)"
+      @drop="dropTaskOrColumn($event, { toTasks: column.tasks, toColumnIndex: colIndex })"
       @dragover.prevent
       @dragenter.prevent
       @dragstart.self="pickupColumn($event, colIndex)"
@@ -18,9 +18,14 @@
           draggable
           @dragstart="pickupTask($event, taskIndex, colIndex)"
           @click="openTask(task)"
+          @dragover.prevent
+          @dragenter.prevent
+          @drop.stop="dropTaskOrColumn($event, { toTasks: column.tasks, toColumnIndex: colIndex, toTaskIndex: taskIndex })"
           )
-          span.w-full.flex-shrink-0.font-bold {{ task.name }}
-          span.w-full.flex-shrink-0.mt-1.text-sm(v-if="task.description") {{ task.description }}
+          template(v-if="task")
+            span.w-full.flex-shrink-0.font-bold {{ task.name }}
+            span.w-full.flex-shrink-0.mt-1.text-sm(v-if="task.description") {{ task.description }}
+          span(v-else) NOTHING
       input.block.p-2.w-full.bg-transparent(
         type="text"
         placeholder="+ Enter new task"
@@ -66,7 +71,7 @@ export default {
       e.dataTransfer.setData('from-column-index', fromColIndex)
       e.dataTransfer.setData('drag-type', 'task')
     },
-    dropTask(e, toTasks) {
+    moveTask(e, toTasks, toTaskIndex) {
       const taskIndex = e.dataTransfer.getData('task-index')
       const fromColIndex = e.dataTransfer.getData('from-column-index')
       const fromTasks = this.board.columns[fromColIndex].tasks
@@ -74,6 +79,7 @@ export default {
         fromTasks,
         toTasks,
         taskIndex,
+        toTaskIndex,
       })
     },
     pickupColumn(e, colIndex) {
@@ -82,9 +88,14 @@ export default {
       e.dataTransfer.setData('from-column-index', colIndex)
       e.dataTransfer.setData('drag-type', 'column')
     },
-    dropTaskOrColumn(e, totTasks, toColumnIndex) {
+    dropTaskOrColumn(e, { toTasks, toTaskIndex, toColumnIndex }) {
       const dragType = e.dataTransfer.getData('drag-type')
-      if (dragType === 'task') this.dropTask(e, totTasks)
+      if (dragType === 'task')
+        this.moveTask(
+          e,
+          toTasks,
+          toTaskIndex !== undefined ? toTaskIndex : toTasks.length
+        )
       else this.moveColumn(e, toColumnIndex)
     },
     moveColumn(e, toColumnIndex) {
