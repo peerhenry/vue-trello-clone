@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import defaultBoard from './default-board.js'
+import uuid from '@/utils/uuid.js'
 
 Vue.use(Vuex)
 
@@ -23,6 +24,10 @@ const store = {
         if (task) return task
       }
     },
+  },
+  mutations: {
+    CREATE_TASK: (state, { tasks, name }) => tasks.push({ name, id: uuid() }),
+    UPDATE_TASK: (state, { task, key, value }) => Vue.set(task, key, value),
   },
 }
 

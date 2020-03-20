@@ -11,6 +11,11 @@
           )
           span.w-full.flex-shrink-0.font-bold {{ task.name }}
           span.w-full.flex-shrink-0.mt-1.text-sm(v-if="task.description") {{ task.description }}
+      input.block.p-2.w-full.bg-transparent(
+        type="text"
+        placeholder="+ Enter new task"
+        @keyup.enter="createTask($event, column.tasks)"
+        )
 
   .task-bg(
     v-if="isTaskOpen"
@@ -36,6 +41,13 @@ export default {
     },
     close() {
       this.$router.push({ name: 'board' })
+    },
+    createTask(e, tasks) {
+      this.$store.commit('CREATE_TASK', {
+        tasks,
+        name: e.target.value,
+      })
+      e.target.value = ''
     },
   },
 }

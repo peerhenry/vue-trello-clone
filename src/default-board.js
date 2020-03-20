@@ -1,7 +1,4 @@
-const uuid = () =>
-  Math.random()
-    .toString(16)
-    .slice(2)
+import uuid from '@/utils/uuid.js'
 
 export default {
   name: 'workshop',
