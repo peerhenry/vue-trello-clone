@@ -44,6 +44,12 @@ const store = {
       const colToMove = columnList.splice(fromColumnIndex, 1)[0]
       columnList.splice(toColumnIndex, 0, colToMove)
     },
+    CREATE_COLUMN: (state, { name }) => {
+      state.board.columns.push({
+        name,
+        tasks: [],
+      })
+    },
   },
 }
 
