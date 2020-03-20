@@ -57,9 +57,6 @@ export default {
 </script>
 
 <style lang="stylus">
-.task
-  @apply flex items-center flex-wrap shadow mb-2 py-2 px-2 rounded bg-white text-gray-800 no-underline
-
 .board
   @apply p-4 bg-teal-500 h-full overflow-auto
 
