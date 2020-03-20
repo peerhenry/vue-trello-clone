@@ -1,12 +1,20 @@
 <template lang="pug">
 .board
   .flex.flex-row.items-start
-    .column(v-for="(column, ci) of board.columns" :key="`col-${ci}`")
+    .column(
+      v-for="(column, colIndex) of board.columns"
+      :key="`col-${colIndex}`"
+      @drop="dropTask($event, column.tasks)"
+      @dragover.prevent
+      @dragenter.prevent
+      )
       .flex.items-center.mb-2.font-bold {{ column.name }}
       div
         .task(
-          v-for="(task, ti) in column.tasks"
-          :key="`col-${ti}`"
+          v-for="(task, taskIndex) in column.tasks"
+          :key="`col-${taskIndex}`"
+          draggable
+          @dragstart="pickupTask($event, taskIndex, colIndex)"
           @click="openTask(task)"
           )
           span.w-full.flex-shrink-0.font-bold {{ task.name }}
@@ -48,6 +56,30 @@ export default {
         name: e.target.value,
       })
       e.target.value = ''
+    },
+    pickupTask(e, taskIndex, fromColIndex) {
+      e.dataTransfer.effectAllowed = 'move'
+      e.dataTransfer.dropEffect = 'move'
+      e.dataTransfer.setData('task-index', taskIndex)
+      e.dataTransfer.setData('from-column-index', fromColIndex)
+    },
+    dropTask(e, toTasks) {
+      const taskIndex = e.dataTransfer.getData('task-index')
+      const fromColIndex = e.dataTransfer.getData('from-column-index')
+      const fromTasks = this.board.columns[fromColIndex].tasks
+      console.log(
+        'time to move',
+        taskIndex,
+        'from',
+        fromColIndex,
+        'to',
+        toTasks
+      )
+      this.$store.commit('MOVE_TASK', {
+        fromTasks,
+        toTasks,
+        taskIndex,
+      })
     },
   },
 }
