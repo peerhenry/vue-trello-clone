@@ -1,27 +1,22 @@
 <template lang="pug">
-.column(
-  draggable
-  @drop="dropTaskOrColumn($event, { toTasks: column.tasks, toColumnIndex: columnIndex })"
-  @dragover.prevent
-  @dragenter.prevent
-  @dragstart.self="pickupColumn($event, columnIndex)"
-  )
-  .flex.items-center.mb-2.font-bold {{ column.name }}
-  div
-    BoardTask(
-      v-for="(task, taskIndex) in column.tasks"
-      :key="`col-${taskIndex}`"
-      :task="task"
-      :taskIndex="taskIndex"
-      :column="column"
-      :columnIndex="columnIndex"
-      :board="board"
+AppDrop(@dropped="dropOnColumn")
+  AppDrag.column(:transferData="{ dragType: 'column', fromColumnIndex: columnIndex }")
+    .flex.items-center.mb-2.font-bold {{ column.name }}
+    div
+      BoardTask(
+        v-for="(task, taskIndex) in column.tasks"
+        :key="`col-${taskIndex}`"
+        :task="task"
+        :taskIndex="taskIndex"
+        :column="column"
+        :columnIndex="columnIndex"
+        :board="board"
+        )
+    input.block.p-2.w-full.bg-transparent(
+      type="text"
+      placeholder="+ Enter new task"
+      @keyup.enter="createTask($event, column.tasks)"
       )
-  input.block.p-2.w-full.bg-transparent(
-    type="text"
-    placeholder="+ Enter new task"
-    @keyup.enter="createTask($event, column.tasks)"
-    )
 </template>
 
 <script>
@@ -39,17 +34,10 @@ export default {
       })
       e.target.value = ''
     },
-    pickupColumn(e, colIndex) {
-      e.dataTransfer.effectAllowed = 'move'
-      e.dataTransfer.dropEffect = 'move'
-      e.dataTransfer.setData('from-column-index', colIndex)
-      e.dataTransfer.setData('drag-type', 'column')
-    },
-    moveColumn(e, toColumnIndex) {
-      const fromColumnIndex = e.dataTransfer.getData('from-column-index')
-      this.$store.commit('MOVE_COLUMN', {
-        fromColumnIndex,
-        toColumnIndex,
+    dropOnColumn(transferData) {
+      this.dropTaskOrColumn(transferData, {
+        toColumnIndex: this.columnIndex,
+        toTasks: this.column.tasks,
       })
     },
   },

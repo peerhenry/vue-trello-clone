@@ -1,4 +1,8 @@
+import AppDrag from '@/components/AppDrag'
+import AppDrop from '@/components/AppDrop'
+
 export default {
+  components: { AppDrag, AppDrop },
   props: {
     column: {
       type: Object,
@@ -14,10 +18,17 @@ export default {
     },
   },
   methods: {
-    moveTask(e, toTasks, toTaskIndex) {
-      const taskIndex = e.dataTransfer.getData('task-index')
-      const fromColIndex = e.dataTransfer.getData('from-column-index')
-      const fromTasks = this.board.columns[fromColIndex].tasks
+    moveColumn(transferData, toColumnIndex) {
+      const fromColumnIndex = transferData.fromColumnIndex
+      this.$store.commit('MOVE_COLUMN', {
+        fromColumnIndex,
+        toColumnIndex,
+      })
+    },
+    moveTask(transferData, toTasks, toTaskIndex) {
+      const taskIndex = transferData.taskIndex
+      const fromColumnIndex = transferData.fromColumnIndex
+      const fromTasks = this.board.columns[fromColumnIndex].tasks
       this.$store.commit('MOVE_TASK', {
         fromTasks,
         toTasks,
@@ -25,15 +36,15 @@ export default {
         toTaskIndex,
       })
     },
-    dropTaskOrColumn(e, { toTasks, toTaskIndex, toColumnIndex }) {
-      const dragType = e.dataTransfer.getData('drag-type')
+    dropTaskOrColumn(transferData, { toTasks, toTaskIndex, toColumnIndex }) {
+      const dragType = transferData.dragType
       if (dragType === 'task')
         this.moveTask(
-          e,
+          transferData,
           toTasks,
           toTaskIndex !== undefined ? toTaskIndex : toTasks.length
         )
-      else this.moveColumn(e, toColumnIndex)
+      else this.moveColumn(transferData, toColumnIndex)
     },
   },
 }
