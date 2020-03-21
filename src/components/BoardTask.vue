@@ -1,11 +1,12 @@
 <template lang="pug">
 AppDrop(@dropped="dropIt")
-  AppDrag(:transferData="{ dragType: 'task', fromColumnIndex: columnIndex, taskIndex: taskIndex }")
-    .task(@click="openTask(task)")
-      template(v-if="task")
-        span.w-full.flex-shrink-0.font-bold {{ task.name }}
-        span.w-full.flex-shrink-0.mt-1.text-sm(v-if="task.description") {{ task.description }}
-      span(v-else) NOTHING
+  AppDrag.task(
+    :transferData="{ dragType: 'task', fromColumnIndex: columnIndex, taskIndex: taskIndex }"
+    @click="openTask(task)")
+    template(v-if="task")
+      span.w-full.flex-shrink-0.font-bold {{ task.name }}
+      span.w-full.flex-shrink-0.mt-1.text-sm(v-if="task.description") {{ task.description }}
+    span(v-else) NOTHING
 </template>
 
 <script>
